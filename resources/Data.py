@@ -8,7 +8,7 @@ import json
 from bson import json_util
 from bson import ObjectId
 from werkzeug.security import generate_password_hash, check_password_hash
-con = MongoClient("mongodb+srv://user:normi@cluster0.kpekd.mongodb.net/myFirstDatabase?retryWrites=true&w=majority")
+con = MongoClient("mongodb+srv://user:normi@cluster0.kpekd.mongodb.net/NormiPayrollDTRe?retryWrites=true&w=majority")
 db = con["NormiPayrollDTR"]
 
 #collection validator
