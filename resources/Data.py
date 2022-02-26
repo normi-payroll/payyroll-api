@@ -14,87 +14,8 @@ db = con["NormiPayrollDTR"]
 
 #collection validator
 validCol = ["employeesInfo", "designation", "dtr", "payroll"]
-'''
-list of collections
-emloyeesInfo = {
-    fullname,
-    name={
-        prefix, firstName, middleName, lastName, suffix
-    },
-    account={
-        username, password
-        userLevel - #employee-teacher #employee-staff etc...
-                    #employee-higherAdmin, employee-basicAdmin
-    },
-    //autoUpdate
-    designation={
-        department, position, description,
-        salary_range={
-            base - A base salary is the minimum amount you can expect to earn in exchange for your time or services. This is the amount earned before benefits, bonuses, or compensation is added. 
-            type - Hourly rate or as weekly, monthly, or annual income.
-        }
-    }
-}
-
-designation={
-        department, position, 
-        description,
-        salary_range={
-            base - A base salary is the minimum amount you can expect to earn in exchange for your time or services. This is the amount earned before benefits, bonuses, or compensation is added. 
-            type - Hourly rate or as weekly, monthly, or annual income.
-        }
-    }
-
-dtr = {
-    date, eid, 
-    type, #faceRec-Capture, faceRec-Realtime, QR-Code
-    location : {
-        long, lat,
-        address
-    },
-    status, #OK-Overtime/Undertime, For-Approval - when geolocation is not in range in school, Not-OK - declined request
-    details: {
-        timeIn, breakOut, breakIn, timeOut
-        workingHours, overTime, underTime
-    }
-}
-
-payroll = {
-    date,
-    eid,
-    //autoUpdate
-    designation={
-        department, position, description,
-        salary_range={
-            base - A base salary is the minimum amount you can expect to earn in exchange for your time or services. This is the amount earned before benefits, bonuses, or compensation is added. 
-            type - Hourly rate or as weekly, monthly, or annual income.
-            allowance
-        }
-    }
-    salary={
-        additions={
-            allowance,
-            #dynamic
-            others=[{
-                name, amount
-            }]
-        }
-        deductions={
-            tax,#auto compute
-            #dynamic
-            others=[{
-                name, amount
-            }]
-        }
-        gross, net
-    }
-    
-    semester, #1-15 16-30/31
-    status, #Paid, Pending/On Process
 
 
-}
-'''
 '''
 Status Code
 200 - OK
@@ -110,7 +31,6 @@ class JSONEncoder(json.JSONEncoder):
 
 class Data(Resource):
 
-    #@jwt_required()
     def get(self, col, query):
         try:
             if validCol.count(col) > 0:
@@ -134,7 +54,6 @@ class Data(Resource):
             print(error)
             return {"data": None }, 500
     
-    #@jwt_required()
     def post(self, col, query):
         try:
             qry = json.loads(query)
@@ -150,7 +69,6 @@ class Data(Resource):
         except:
             return {"inserted": False}, 500
 
-    #@jwt_required()
     def put(self, col, query):
         try:
             qry = json.loads(query)
@@ -169,7 +87,6 @@ class Data(Resource):
         except:
             return {"updated": False}, 500
 
-    #@jwt_required()
     def delete(self, col, query):
         return { "response" : "unavailable" }
 
