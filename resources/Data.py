@@ -7,7 +7,7 @@ from pymongo import MongoClient
 import json
 from bson import json_util
 from bson import ObjectId
-from werkzeug.security import generate_password_hash, check_password_hash
+#from werkzeug.security import generate_password_hash, check_password_hash
 con = MongoClient("mongodb+srv://user:normi@cluster0.kpekd.mongodb.net/NormiPayrollDTR?retryWrites=true&w=majority")
 db = con["NormiPayrollDTR"]
 
@@ -15,13 +15,6 @@ db = con["NormiPayrollDTR"]
 validCol = ["employeesInfo", "designation", "dtr", "payroll"]
 
 
-'''
-Status Code
-200 - OK
-205 - Reset Content
-404 - Not Found
-500 - Server Error
-'''
 class JSONEncoder(json.JSONEncoder):
     def default(self, o):
         if isinstance(o, ObjectId):
