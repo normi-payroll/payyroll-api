@@ -3,7 +3,6 @@ from flask import Flask
 from flask_jwt_extended import JWTManager
 from flask_restful import Resource, Api
 from resources.Data import Data
-from resources.Image import UploadAPI
 
 app = Flask(__name__)
 api = Api(app)
