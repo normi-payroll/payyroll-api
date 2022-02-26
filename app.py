@@ -19,6 +19,5 @@ def after_request(response):
   return response
 
 api.add_resource(Data, '/api/data/<string:col>/<string:query>')
-#api.add_resource(Data, '/api/data/<string:col>/<string:query>')
 if __name__ == '__main__':
-    app.run(debug=True, port="8080", host="0.0.0.0")
+    app.run()
