@@ -1,0 +1,175 @@
+
+from os import error
+from flask import jsonify, request as req
+from flask_restful import Resource
+from flask_jwt_extended import jwt_required
+
+from pymongo import MongoClient
+import json
+from bson import json_util
+from bson import ObjectId
+from werkzeug.security import generate_password_hash, check_password_hash
+con = MongoClient("mongodb://localhost:27017/")
+db = con["NormiPayrollDTR"]
+
+#collection validator
+validCol = ["employeesInfo", "designation", "dtr", "payroll"]
+'''
+list of collections
+emloyeesInfo = {
+    fullname,
+    name={
+        prefix, firstName, middleName, lastName, suffix
+    },
+    account={
+        username, password
+        userLevel - #employee-teacher #employee-staff etc...
+                    #employee-higherAdmin, employee-basicAdmin
+    },
+    //autoUpdate
+    designation={
+        department, position, description,
+        salary_range={
+            base - A base salary is the minimum amount you can expect to earn in exchange for your time or services. This is the amount earned before benefits, bonuses, or compensation is added. 
+            type - Hourly rate or as weekly, monthly, or annual income.
+        }
+    }
+}
+
+designation={
+        department, position, 
+        description,
+        salary_range={
+            base - A base salary is the minimum amount you can expect to earn in exchange for your time or services. This is the amount earned before benefits, bonuses, or compensation is added. 
+            type - Hourly rate or as weekly, monthly, or annual income.
+        }
+    }
+
+dtr = {
+    date, eid, 
+    type, #faceRec-Capture, faceRec-Realtime, QR-Code
+    location : {
+        long, lat,
+        address
+    },
+    status, #OK-Overtime/Undertime, For-Approval - when geolocation is not in range in school, Not-OK - declined request
+    details: {
+        timeIn, breakOut, breakIn, timeOut
+        workingHours, overTime, underTime
+    }
+}
+
+payroll = {
+    date,
+    eid,
+    //autoUpdate
+    designation={
+        department, position, description,
+        salary_range={
+            base - A base salary is the minimum amount you can expect to earn in exchange for your time or services. This is the amount earned before benefits, bonuses, or compensation is added. 
+            type - Hourly rate or as weekly, monthly, or annual income.
+            allowance
+        }
+    }
+    salary={
+        additions={
+            allowance,
+            #dynamic
+            others=[{
+                name, amount
+            }]
+        }
+        deductions={
+            tax,#auto compute
+            #dynamic
+            others=[{
+                name, amount
+            }]
+        }
+        gross, net
+    }
+    
+    semester, #1-15 16-30/31
+    status, #Paid, Pending/On Process
+
+
+}
+'''
+'''
+Status Code
+200 - OK
+205 - Reset Content
+404 - Not Found
+500 - Server Error
+'''
+class JSONEncoder(json.JSONEncoder):
+    def default(self, o):
+        if isinstance(o, ObjectId):
+            return str(o)
+        return json.JSONEncoder.default(self, o)
+
+class Data(Resource):
+
+    #@jwt_required()
+    def get(self, col, query):
+        try:
+            if validCol.count(col) > 0:
+                qry = json.loads(query)
+                print(qry)
+                reqData = db[col].find(qry)
+                if reqData:
+                    data = []
+                    for el in reqData:
+                        el["_id"] = str(el["_id"]).replace("ObjectId('","").replace("')","")
+                        data.append(el)
+                           
+                    print(data)
+                    data
+                    return {"data": data }, 200
+                else:
+                    return {"data": None, "errMsg": "Cannot find query on '"+ col + "' database!" }, 205
+            else:
+                return {"data": None, "errMsg":"'"+ col +"' is not in the database!" }, 404
+        except error:
+            print(error)
+            return {"data": None }, 500
+    
+    #@jwt_required()
+    def post(self, col, query):
+        try:
+            qry = json.loads(query)
+            body = req.get_json(force=True)
+            print(col)
+            print(body)
+            print(validCol.count(col) > 0)
+            if validCol.count(col) > 0:
+                db[col].insert_one(body)
+                return {"inserted": True}, 200
+            else:
+                return {"inserted": False, "errMsg":"'"+ col +"' is not in the database!" }, 404
+        except:
+            return {"inserted": False}, 500
+
+    #@jwt_required()
+    def put(self, col, query):
+        try:
+            qry = json.loads(query)
+            body = req.get_json(force=True)
+            print(body)
+            if validCol.count(col) > 0:
+                print('was here')
+                exist = db[col].update_one(qry ,{"$set": body })
+                if exist:
+                    return {"updated": True}, 200
+                else:
+                    return {"updated": False, "errMsg": body["fullName"]+" is already exists in '"+ col +"' database!"}, 205
+            else:
+                print('was here4')
+                return {"updated": False, "errMsg":"'"+ col +"' is not in the database!" }, 404
+        except:
+            return {"updated": False}, 500
+
+    #@jwt_required()
+    def delete(self, col, query):
+        return { "response" : "unavailable" }
+
