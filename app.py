@@ -8,8 +8,6 @@ from resources.Image import UploadAPI
 app = Flask(__name__)
 api = Api(app)
 
-JWT_SECURITY_KEY = os.getenv('JWT_SECURITY_KEY')
-jwt = JWTManager(app)
 @app.after_request
 
 def after_request(response):
