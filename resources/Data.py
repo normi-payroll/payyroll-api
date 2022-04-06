@@ -12,7 +12,7 @@ con = MongoClient("mongodb+srv://user:normi@cluster0.kpekd.mongodb.net/NormiPayr
 db = con["NormiPayrollDTR"]
 
 #collection validator
-validCol = ["employeesInfo", "designation", "dtr", "payroll"]
+validCol = ["employeesInfo", "designation", "dtr", "payroll", "requests"]
 
 
 class JSONEncoder(json.JSONEncoder):
