@@ -69,6 +69,7 @@ class Data(Resource):
             if validCol.count(col) > 0:
                 print('was here')
                 exist = db[col].update_one(qry ,{"$set": body })
+                print(exist)
                 if exist:
                     return {"updated": True}, 200
                 else:
